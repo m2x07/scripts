@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+print_help ()
+{
+    echo "USAGE: $0 [OPTION]
+
+OPTIONS:
+    'i' -   Increase the brightness by 5%;
+    'd' -   Decrease the brightness by 5%;
+    's' -   Set the brightness to given %. Value should be between 0-100 without '%'
+            Example: \"$0 s 50\" sets the brightness to 50%
+    'g' -   Get current brightness in %
+    "
+}
+
+if [[ $# -eq 0 ]]; then
+    echo "no options provided."
+    echo "check \"$0 help\" for how to use"
+    exit 0
+fi
+
+case $1 in
+    "i")
+        brightnessctl set +5% > /dev/null
+        kill -44 $(pidof dwmblocks)
+        ;;
+    "d")
+        brightnessctl set 5%- > /dev/null
+        kill -44 $(pidof dwmblocks)
+        ;;
+    "s")
+        shift
+        if [[ $1 -gt 100 ]]; then
+            val="100%"
+            brightnessctl set $val > /dev/null
+        fi
+        if [[ $1 -lt 0 ]]; then
+            val="0%"
+            brightnessctl set $val > /dev/null
+        fi
+        val="$1\%"
+        brightnessctl set $val > /dev/null
+        kill -44 $(pidof dwmblocks)
+        ;;
+    "g")
+        brightnessctl i | awk '/Current/ { gsub(/[()]/, "", $4); print $4 }' 
+        ;;
+    "help")
+        print_help
+esac
+

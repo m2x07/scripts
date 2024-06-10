@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+vol_command="pactl set-sink-volume @DEFAULT_SINK@"
+
+print_help ()
+{
+    echo "USAGE: $0 [OPTION]
+
+OPTIONS:
+    'i' -   Increase the volume by 5%;
+    'd' -   Decrease the volume by 5%;
+    's' -   Set the volume to given %. Value should be between 0-100
+            Example: \"$0 s 50%\"
+    'm' -   Toggle mute
+    "
+}
+
+if [[ $# -eq 0 ]]; then
+    echo "no options provided."
+    echo "check \"$0 help\" for how to use"
+    exit 0
+fi
+
+case $1 in
+    "i")
+        $vol_command +5%
+        kill -46 $(pidof dwmblocks)
+        ;;
+    "d")
+        $vol_command -5%
+        kill -46 $(pidof dwmblocks)
+        ;;
+    "s")
+        shift
+        $vol_command $1
+        kill -46 $(pidof dwmblocks)
+        ;;
+    "m")
+        pactl set-sink-mute @DEFAULT_SINK@ toggle
+        kill -46 $(pidof dwmblocks)
+        ;;
+    "help")
+        print_help
+esac
+
