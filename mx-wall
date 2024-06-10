@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+random_wallpaper=$(find $HOME/Pictures/Wallpapers -type f -name "*.png" -or -name "*.jpg" | shuf -n 1)
+echo "$random_wallpaper" > $HOME/.wallpaper
+xwallpaper --zoom $random_wallpaper
